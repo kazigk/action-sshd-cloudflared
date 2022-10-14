@@ -11,11 +11,6 @@
 
 cd "$GITHUB_ACTION_PATH"
 
-cloudflared_url=https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
-echo "Downloading \`cloudflared\` from <$cloudflared_url>..."
-curl --location --silent --output cloudflared "$cloudflared_url"
-chmod +x cloudflared
-
 curl -s "https://api.github.com/users/$GITHUB_ACTOR/keys" | jq -r '.[].key' > authorized_keys
 
 if grep -q . authorized_keys; then
@@ -62,7 +57,7 @@ echo 'Starting tmux session...'
 
 # Use `sed -u` (unbuffered) otherwise logs don't show up in the UI
 echo 'Starting Cloudflare tunnel...'
-./cloudflared tunnel --no-autoupdate --url tcp://localhost:2222 2>&1 | tee cloudflared.log | sed -u 's/^/cloudflared: /' &
+cloudflared tunnel --no-autoupdate --url tcp://localhost:2222 2>&1 | tee cloudflared.log | sed -u 's/^/cloudflared: /' &
 cloudflared_pid=$!
 
 #
